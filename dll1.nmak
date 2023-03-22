@@ -1,0 +1,59 @@
+# MSVC-only: build dll1.dll/dll1.dll1:
+# nmake -f dll1.nmak
+# using main.lib
+
+
+DLLNAM = dll1
+EXENAM = main
+
+SRC = dll1.c
+
+#VPATH = ../test_dll/
+
+
+#-----------------------------------------------------
+# get <fn>.o from <fn>.c for sourceList
+OBJ = $(SRC:.c=.obj)
+
+CPDEB = -DDEB /Zi
+LKDEB = /DEBUG
+
+CPFLG = /nologo $(CPDEB)
+
+#!MESSAGE - VS-2010
+cc_dir = $(VCINSTALLDIR)
+cc_lib_dir = $(cc_dir)\lib
+cc_inc_dir = $(cc_dir)\include
+sdk_lib_dir = $(WINDOWSSDKDIR)Lib
+
+LIB_BAS = \
+ "$(cc_lib_dir)\libcmt.lib"\
+ "$(sdk_lib_dir)\Kernel32.lib"\
+ "$(sdk_lib_dir)\User32.lib"\
+ "$(sdk_lib_dir)\Gdi32.lib"
+
+
+#-----------------------------------------------------
+LKFLG =\
+ /link\
+ /nologo\
+ /nodefaultlib\
+ /INCREMENTAL:NO\
+ /DEBUG\
+ /MACHINE:X86
+
+
+#-----------------------------------------------------
+build: $(OBJ)
+	@echo ================= build $@ ========================
+	@echo "OBJ=" $(OBJ)
+	$(CC) $(OBJ) $(LIB_BAS) $(LKFLG) main.lib /DLL /OUT:dll1.dll
+
+
+#-----------------------------------------------------
+.c.obj:
+	@echo ================= Compile $@ ========================
+	$(CC) -c $(CPFLG) $<
+
+
+# eof

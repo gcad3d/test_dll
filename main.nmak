@@ -1,0 +1,62 @@
+# build main.exe and main.lib (exports)
+# main.def made by gendef (here manually)
+# nmake -f main.nmak
+# check exports: dumpbin /exports main.exe
+# test exe, calling dll:
+# ./test_dll.exe
+# see README
+
+EXENAM = main
+
+SRC = main.c os_dll_ms.c
+
+
+#-----------------------------------------
+# get <fn>.obj from <fn>.c for sourceList
+OBJ = $(SRC:.c=.obj)
+
+DEBUG = -DDEB /Zi
+
+CPFLG = /nologo $(DEBUG) /Od
+
+!MESSAGE - VS-2010
+cc_dir = $(VCINSTALLDIR)
+cc_lib_dir = $(cc_dir)\lib
+cc_inc_dir = $(cc_dir)\include
+sdk_lib_dir = $(WINDOWSSDKDIR)Lib
+
+LIB_BAS =\
+ "$(cc_lib_dir)\libcmt.lib"\
+ "$(sdk_lib_dir)\Kernel32.lib"\
+ "$(sdk_lib_dir)\User32.lib"\
+ "$(sdk_lib_dir)\Gdi32.lib"
+
+
+#-----------------------------------------------------
+LKFLG =\
+ /link\
+ /nologo\
+ /nodefaultlib\
+ /INCREMENTAL:NO\
+ /DEBUG\
+ /MACHINE:X86
+
+#-o main.lib
+# -o $(EXENAM).lib
+
+
+#-----------------------------------------------------
+build: $(OBJ)
+	@echo ================= $@ ========================
+	@echo "OBJ=" $(OBJ)
+	$(CC) $(OBJ) $(LIB_BAS) $(LKFLG) /DEF:$(EXENAM).def /OUT:main.exe
+#	make -f $(MAKEFILE_LIST) run
+
+
+#-----------------------------------------------------
+.c.obj:
+	@echo ================= Compile $@ ========================
+	$(CC) -c $(CPFLG) $<
+
+
+# eof
