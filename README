@@ -1,0 +1,64 @@
+README ../test_dll/
+
+Testprogram for DLL / shared-overlay, loaded late, unloaded after use;
+- using functions / variables exported of main;
+- operating-systems: Linux, Microsoft-Msys2, Microsoft-MS-VC
+
+
+process is:
+- dll is loaded late (only if called by user); then
+- dll is calling exports of main (function in main, variable in main); then
+- dll is unloaded.
+- [dll is (edited,) recompiled]
+- dll load use, unload.
+
+
+
+.........................................
+Using Linux:
+make -f dll1.mak       - makes dll1.dll
+make -f main.mak       - makes main
+gdb ./main             - start main (key r to start, q to stop gdb).
+
+
+.........................................
+Using Microsoft-Msys2:
+- create file main.def - must have unix-fileformat (LF, not CR-LF)
+make -f main.mak       - makes main
+make -f dll1.mak       - makes dll1.dll
+gdb ./main.exe         - start main (key r to start, q to stop gdb).
+
+
+.........................................
+Using Microsoft-VC:
+- create file main.def
+nmake -f main.nmak       - makes main.exe and main.lib
+nmake -f dll1.nmak       - makes dll1.dll
+main.exe                 - start main
+
+
+Format of .def - file:
+- .def file is a list of exported functions/variables, manually or from gendef;
+- for testExample:
+
+EXPORTS
+  i1TestMain
+  main_export
+
+
+
+.........................................
+Files Linux, Microsoft-Msys2:
+main.mak            build test_dll.exe
+main                executable Linux
+main.exe            executable Msys2 or Microsoft-VC
+main.c              main
+main.def            exported functionNames and variableNames of main
+
+dll1.mak            build dll
+dll1.dll            dll for Linux or Msys2 or Microsoft-VC
+dll1.c              source dll1
+
+
+
+# EOF
