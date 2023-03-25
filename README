@@ -1,37 +1,39 @@
-README ../test_dll/
+README ../test_dll_dyn/
 
-Testprogram for DLL / shared-overlay, loaded late, unloaded after use;
-- using functions / variables exported of main;
+Testprogram for a dynamic DLL / shared-overlay
+- loaded late - must be done explicit; unloaded after use;
+- main can use functions exported of dll;
+- dll can use functions/variables exported of main;
 - operating-systems: Linux, Microsoft-Msys2, Microsoft-MS-VC
 
 
 process is:
-- dll is loaded late (only if called by user); then
-- dll is calling exports of main (function in main, variable in main); then
-- dll is unloaded.
-- [dll is (edited,) recompiled]
-- dll load use, unload.
-
+- main does: load dll, start dll-function, unload dll;
+  - or: load dll, start dll-function;
+  - or: unload dll;
+- dll-function can use imported functions/variables of main;
 
 
 .........................................
 Using Linux:
+make -f main.mak clean - clean after changing OS
 make -f dll1.mak       - makes dll1.dll
 make -f main.mak       - makes main
-gdb ./main             - start main (key r to start, q to stop gdb).
+./main                 - start main (key r to start, q to stop gdb).
 
 
 .........................................
 Using Microsoft-Msys2:
-- create file main.def - must have unix-fileformat (LF, not CR-LF)
+make -f main.mak clean - clean after changing OS
 make -f main.mak       - makes main
 make -f dll1.mak       - makes dll1.dll
-gdb ./main.exe         - start main (key r to start, q to stop gdb).
+./main.exe             - start main (key r to start, q to stop gdb).
 
 
 .........................................
 Using Microsoft-VC:
-- create file main.def
+nmake -f main.nmak clean - clean after changing OS
+- create file main.def   - or use existing
 nmake -f main.nmak       - makes main.exe and main.lib
 nmake -f dll1.nmak       - makes dll1.dll
 main.exe                 - start main
@@ -49,11 +51,13 @@ EXPORTS
 
 .........................................
 Files Linux, Microsoft-Msys2:
-main.mak            build test_dll.exe
+main.mak            build main.exe
 main                executable Linux
 main.exe            executable Msys2 or Microsoft-VC
 main.c              main
 main.def            exported functionNames and variableNames of main
+os_dll_uix.c        functions load/start/unload dll for Unix
+os_dll_ms.c         functions load/start/unload dll for MS
 
 dll1.mak            build dll
 dll1.dll            dll for Linux or Msys2 or Microsoft-VC

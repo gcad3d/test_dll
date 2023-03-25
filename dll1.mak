@@ -4,12 +4,7 @@
 # dlltool -v -l lib_main_exp.a -d main_exp.def
 
 
-EXENAM = dll1
-
 SRC = dll1.c
-
-VPATH = ../test_dll/
-
 
 #-----------------------------------------------------
 # get <fn>.o from <fn>.c for sourceList
@@ -29,7 +24,7 @@ LKFLG = $(DEBUG) -shared -export-dynamic
 
 #-----------------------------------------------------
 else
-# MSYS:
+# MSYS: x86_64-pc-msys
 LKFLG = -shared $(DEBUG) main.a
 
 endif

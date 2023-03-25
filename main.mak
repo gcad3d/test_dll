@@ -1,20 +1,15 @@
-# build main[.exe]:
+# main.mak     build main[.exe]:
 # make -f main.mak
-# test exe, calling dll:
-# ./main[.exe]
 # see README
 
-EXENAM = main
 
 ifeq "$(MAKE_HOST)" "x86_64-pc-linux-gnu"
+# Linux
 SRC = main.c os_dll_uix.c
 else
+# MSYS
 SRC = main.c os_dll_ms.c
-
 endif
-
-
-VPATH = ../test_dll/
 
 
 #-----------------------------------------
@@ -31,13 +26,14 @@ $(info - MAKE_HOST = $(MAKE_HOST))
 #-----------------------------------------------------
 ifeq "$(MAKE_HOST)" "x86_64-pc-linux-gnu"
 # Linux-64:
-LKFLG = $(DEBUG) -rdynamic -Wl,--unresolved-symbols=ignore-all
+LKFLG = $(DEBUG) -rdynamic -ldl -Wl,--unresolved-symbols=ignore-all
 
 #-----------------------------------------------------
 else
 # MSYS:
 LKFLG =  $(DEBUG) -Wl,-export-all-symbols -Wl,--out-implib,main.a
 endif
+
 
 #-----------------------------------------------------
 build: $(OBJ)
@@ -49,7 +45,7 @@ build: $(OBJ)
 
 #-----------------------------------------------------
 clean:
-	rm -rf *.o *.obj *.out *.a *.ilk *.pdb *.exp *.lib *.dll *.exe main
+	rm -rf *.o *.obj *.out *.a *.ilk *.pdb *.exp *.lib *.dll *.so *.exe main
 
 
 #-----------------------------------------------------

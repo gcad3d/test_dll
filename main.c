@@ -40,7 +40,6 @@ int i1TestMain;                       // export to dll
 int main_export (char *txt);          // export to dll
 
 
-
 void TX_Error (char* txt, ...);
 
 
@@ -69,25 +68,35 @@ void TX_Error (char* txt, ...);
 
   // MSYS and MSVC; LoadLibrary ..
   // 0=load+start+unload; 1=load+start; 2=unload;
+  // test load+start+unload
   irc = OS_dll_do (dllNam, fncNam, NULL, 0);
   if(irc < 0) goto L_exit;
-
   main_export ("-- in main 2 --");
 
-  goto L_reComp;
 
+  //----------------------------------------------------------------
+  // test load+start
+  irc = OS_dll_do (dllNam, "dll_main_start", NULL, 1);
+  if(irc < 0) goto L_exit;
+
+  // already loaded;
+  irc = OS_dll_do (dllNam, "dll_main_exit", NULL, 1);
+  if(irc < 0) goto L_exit;
+
+  // unload
+  irc = OS_dll_do (dllNam, NULL, NULL, 2);
+  if(irc < 0) goto L_exit;
 
 
 
   //----------------------------------------------------------------
-  L_reComp:
+  // TODO  recompile dll
+ 
 
+  //----------------------------------------------------------------
   // get key from user; Esc to exit, CR to edit dll1.c
   printf("- key e CR for edit dll1.c\n");
   printf("- key CR for exit\n");
-// TODO: make func OS_keyb_get (char* sIn, int sSiz)
-
-
   s1[0] = getchar ();
   if(s1[0] == 10) goto L_exit;
   s1[0] = getchar ();  // get char 10

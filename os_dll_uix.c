@@ -27,6 +27,7 @@ access  dll for Unix-OS
 #define FUNC_Init         27
 
 
+static void  *dl1 = NULL;
 
 
 //=====================================================================
@@ -35,6 +36,7 @@ access  dll for Unix-OS
 /// load dll dllNam; start function fncNam (fncDat); unload dll.
 /// see also UI_DllLst_work
 // Input:
+//   dllnam  name of dll; without filetyp ".dll"
 //   fncnam  main-entry using datablock
 //   fncdat  datablock
 //   mode    0=load+start+unload
@@ -42,23 +44,16 @@ access  dll for Unix-OS
 //           2=unload
 
 
-static void  *dl1=NULL;
 static char  dlNamAct[256];
   char  *p1, s1[256];
   void  (*up1)();
 
 
-  printf("OS_dll_do |%s|%s| %d\n",dllNam,fncNam,mode);
-  // fflush (stdout);
+  printf("OS_dll_do uix |%s|%s| %d\n",dllNam,fncNam,mode);
 
+  if(mode == 2) {mode = 0; goto L_close;}
 
-  if(mode == 2) { mode = 0; goto L_close; }
-
-
-  if(dl1 != NULL) {
-    TX_Error("**** ERROR OS_dll_run: core-plugin |%s|  open ..",dllNam);
-    return -1;
-  }
+  if(dl1 != NULL) goto L_start;  // already loaded
 
 
   // fix DLL-FileName
@@ -76,6 +71,7 @@ static char  dlNamAct[256];
 
 
   // get adress of func. <fncNam>
+  L_start:
   up1 = dlsym(dl1, fncNam);
   if(up1 == NULL) {
     OS_dll_close (&dl1);     // unload DLL
@@ -94,7 +90,7 @@ static char  dlNamAct[256];
   L_close:
   if(mode < 1) OS_dll_close (&dl1);     // unload DLL
 
-    printf("ex-OS_dll_do\n");
+    printf("ex-OS_dll_do uix\n");
 
 
   return 0;
@@ -116,7 +112,6 @@ static char  dlNamAct[256];
   // unload if already loaded
   if(*dl1 != NULL) {
     irc = dlclose (*dl1);  // 0=success
-      // printf(" close %d\n",irc);
     if(!irc) *dl1 = NULL;
   }
 
